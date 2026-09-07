@@ -1,0 +1,65 @@
+# Подключение и чтение через MCP
+
+Все операции Jira выполнять через `http://jira-mcp.teremok-spb.local:9000/mcp` (MCP Streamable HTTP, JSON-RPC 2.0). Прямые вызовы Jira REST API больше не использовать. Если нужного инструмента нет, сообщить ограничение.
+
+## Настройка
+
+Единственный файл настройки — `1c-common/.jira-devbase.ps1`, из корня целевого проекта: `../1c-common/.jira-devbase.ps1`. Он исключён из Git. Его разрешено только выполнить в выделенном процессе PowerShell, не читать как текст. Локальные копии не создавать. Пользователь задаёт в общем файле `$JIRA_MCP_URL = 'http://jira-mcp.teremok-spb.local:9000/mcp'` и `$JIRA_MCP_TOKEN` — токен, сформированный в приложении MCP. Прежние `$JIRA_URL`, `$JIRA_TOKEN`, `$JIRA_AUTH_TYPE`, `$JIRA_USERNAME` для MCP не использовать. Реальную настройку автоматически не переписывать; токен в чат не запрашивать.
+
+```powershell
+$ErrorActionPreference = 'Stop'
+$JIRA_MCP_URL = $JIRA_MCP_TOKEN = $null
+try {
+    . '../1c-common/.jira-devbase.ps1'
+    if ($JIRA_MCP_URL -ne 'http://jira-mcp.teremok-spb.local:9000/mcp' -or
+        [string]::IsNullOrWhiteSpace($JIRA_MCP_TOKEN)) {
+        throw 'Invalid MCP configuration'
+    }
+    $jiraMcpHeaders = @{
+        Authorization = "Bearer $JIRA_MCP_TOKEN"
+        Accept = 'application/json, text/event-stream'
+    }
+    # Выполнить последовательность ниже в этом же процессе.
+} catch {
+    throw 'Не удалось подготовить MCP Jira. Проверьте общие параметры JIRA_MCP_URL и JIRA_MCP_TOKEN.'
+}
+```
+
+Изменение адреса сервера согласовать до передачи токена. Не выводить токен, заголовки, содержимое настройки и исходные исключения. Не передавать Bearer в аргументах внешнего процесса curl. В PowerShell использовать заголовки в памяти, `Invoke-WebRequest -UseBasicParsing -MaximumRedirection 0 -TimeoutSec 30`; JSON формировать через `ConvertTo-Json -Depth 30`, передавать как `[Text.Encoding]::UTF8.GetBytes($json)` с `Content-Type: application/json; charset=utf-8`. При HTTP-ошибке сообщать код и безопасное описание. По завершении закрыть выделенный процесс.
+
+## Сессия и инструменты
+
+1. Первым POST отправить `initialize` с уникальным `id`, `params.protocolVersion: "2025-03-26"`, `params.capabilities: {}`, `params.clientInfo: {"name":"1c-common","version":"1.0"}`. Проверить успешный JSON-RPC-ответ и совместимость возвращённой версии; с неподдерживаемой версией не продолжать.
+2. Если ответ содержит `Mcp-Session-Id`, сохранить заголовок в памяти и передавать во всех последующих запросах сессии. Отправить `notifications/initialized` без `id`; успешный ответ на уведомление — HTTP 202 без тела.
+3. Выполнить `tools/list` с новым `id` и `params: {}`. При `nextCursor` дочитать каталог через `params.cursor`, контролируя продвижение. Имена инструментов, обязательные параметры и типы брать из фактических `inputSchema`, не угадывать по REST API.
+4. Операцию выполнить через `tools/call` с новым `id` и `params: {"name":"<имя из каталога>","arguments":{...}}`. Даже чтение выполняется HTTP POST; разрешение на запись определяется действием инструмента.
+
+Ответ может быть `application/json` или `text/event-stream`. Для SSE разделять события по пустой строке, соединять строки `data:` одного события через перевод строки, игнорировать комментарии и служебные поля; искать JSON-RPC-ответ с соответствующим `id`. Не передавать весь SSE-текст в `ConvertFrom-Json` и не принимать уведомление за результат. Проверить JSON-RPC `error` и `result.isError` даже при HTTP 200. Отсутствие ответа с нужным `id` означает неопределённый результат. Читать `result.content`, а при наличии — `structuredContent`; не предполагать прежнюю REST-структуру на верхнем уровне.
+
+При HTTP 404 с session ID инициализировать новую сессию. Записывающий вызов автоматически не повторять: сначала проверить результат чтением. При 401/403 остановиться и сообщить о необходимости проверить токен/права. Успех `tools/list` подтверждает доступ к MCP, но не активность учётной записи Jira: проверить её доступным инструментом профиля. Если его нет, явно указать отсутствие проверки; перед записью от имени неизвестной учётной записи уточнить её у пользователя.
+
+## Поиск и чтение
+
+Пример тела запроса после инициализации и проверки схемы `jira_search`:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "jira_search",
+    "arguments": {
+      "jql": "assignee = \"bulatov.v\" AND status != Done ORDER BY updated DESC",
+      "fields": "summary,key,status",
+      "limit": 10
+    }
+  }
+}
+```
+
+В PowerShell JQL задавать строкой `'assignee = "bulatov.v" AND status != Done ORDER BY updated DESC'`, а JSON формировать сериализатором. Это пример пользователя, не универсальный фильтр незавершённых статусов и не подтверждение текущей учётной записи.
+
+Задачи, комментарии, worklog, переходы, вложения и историю читать соответствующими инструментами из каталога. Ключ проверять, например, по `^[A-Z][A-Z0-9_]*-[0-9]+$`. Дочитывать страницы способом из схемы инструмента, контролируя продвижение и пустые страницы. `limit: 10` ограничивает выдачу; сокращённый результат поиска не заменяет полную задачу. Если сервер не предоставляет историю, вложения или продолжение коллекции, явно указать неполноту анализа. Вложения получать через MCP-инструмент; токен MCP не передавать по URL вложения или перенаправлению.
+
+Спецификация: [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports), [Lifecycle](https://modelcontextprotocol.io/specification/2025-03-26/basic/lifecycle), [Tools](https://modelcontextprotocol.io/specification/2025-03-26/server/tools). Фактические возможности внутреннего сервера проверяются при подключении.

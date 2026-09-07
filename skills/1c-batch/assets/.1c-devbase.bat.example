@@ -1,0 +1,11 @@
+@echo off
+rem Copy to the target project as .1c-devbase.bat. Never commit real credentials.
+set "ONEC_PATH="
+set "ONEC_SERVER="
+set "ONEC_BASE="
+set "ONEC_FILEBASE_PATH="
+set "ONEC_USER="
+set "ONEC_PASSWORD="
+set "ONEC_REPOSITORY_PATH="
+set "ONEC_REPOSITORY_USER="
+set "ONEC_REPOSITORY_PASSWORD="

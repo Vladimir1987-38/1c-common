@@ -1,0 +1,5 @@
+﻿.migration-backup/
+.validation/
+**/.1c-devbase.ps1
+**/.1c-devbase.bat
+**/.jira-devbase.ps1

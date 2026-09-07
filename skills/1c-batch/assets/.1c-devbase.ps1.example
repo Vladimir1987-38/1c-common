@@ -1,0 +1,11 @@
+﻿# Copy to the target project as .1c-devbase.ps1; keep UTF-8 with BOM.
+# Fill either ONEC_SERVER + ONEC_BASE or ONEC_FILEBASE_PATH.
+$ONEC_PATH = ''
+$ONEC_SERVER = ''
+$ONEC_BASE = ''
+$ONEC_FILEBASE_PATH = ''
+$ONEC_USER = ''
+$ONEC_PASSWORD = ''
+$ONEC_REPOSITORY_PATH = ''
+$ONEC_REPOSITORY_USER = ''
+$ONEC_REPOSITORY_PASSWORD = ''
