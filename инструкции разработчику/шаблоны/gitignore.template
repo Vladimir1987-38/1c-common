@@ -1,0 +1,8 @@
+.1c-devbase.ps1
+.1c-devbase.bat
+.sql-devbase.psd1
+.jira-devbase.ps1
+.env
+.env.*
+build/
+*.log

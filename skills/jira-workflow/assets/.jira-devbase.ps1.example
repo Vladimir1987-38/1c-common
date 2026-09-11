@@ -1,0 +1,5 @@
+﻿# Copy to .jira-devbase.ps1 in YOUR local clone of 1c-common.
+# Set the endpoint approved by your team and your own MCP token locally.
+# Keep UTF-8 with BOM. Never commit the configured file.
+$JIRA_MCP_URL = ''
+$JIRA_MCP_TOKEN = ''

@@ -1,6 +1,10 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 $scriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
 . (Join-Path $scriptDir '../.jira-devbase.ps1')
+if ([string]::IsNullOrWhiteSpace($JIRA_MCP_URL) -or [string]::IsNullOrWhiteSpace($JIRA_MCP_TOKEN)) {
+    throw 'Configure JIRA_MCP_URL and JIRA_MCP_TOKEN in the private settings file.'
+}
+# The endpoint must be approved by the developer before sending the token.
 
 # Step 1: Initialize
 $initObj = @{
@@ -14,7 +18,7 @@ $initObj = @{
     }
 } | ConvertTo-Json -Depth 30 -Compress
 
-$req1 = [System.Net.WebRequest]::Create('http://jira-mcp.teremok-spb.local:9000/mcp')
+$req1 = [System.Net.WebRequest]::Create($JIRA_MCP_URL)
 $req1.Method = 'POST'
 $req1.ContentType = 'application/json'
 $req1.Headers['Authorization'] = "Bearer $JIRA_MCP_TOKEN"
@@ -70,7 +74,7 @@ $toolsObj = @{
     params = @{}
 } | ConvertTo-Json -Depth 30 -Compress
 
-$req2 = [System.Net.WebRequest]::Create('http://jira-mcp.teremok-spb.local:9000/mcp')
+$req2 = [System.Net.WebRequest]::Create($JIRA_MCP_URL)
 $req2.Method = 'POST'
 $req2.ContentType = 'application/json'
 $req2.Headers['Authorization'] = "Bearer $JIRA_MCP_TOKEN"

@@ -1,5 +1,14 @@
+﻿param([switch]$CheckSettingsOnly)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '../.jira-devbase.ps1')
+if ([string]::IsNullOrWhiteSpace($JIRA_MCP_URL) -or [string]::IsNullOrWhiteSpace($JIRA_MCP_TOKEN)) {
+    throw 'Configure JIRA_MCP_URL and JIRA_MCP_TOKEN in the private settings file.'
+}
+# The endpoint must be approved by the developer before sending the token.
+if ($CheckSettingsOnly) {
+    [pscustomobject]@{ UrlConfigured = $true; TokenConfigured = $true; ConnectionAttempted = $false }
+    return
+}
 
 $jiraMcpHeaders = @{
     Authorization = "Bearer $JIRA_MCP_TOKEN"
@@ -18,7 +27,7 @@ $initBody = @{
     }
 } | ConvertTo-Json -Depth 30
 
-$req1 = [System.Net.WebRequest]::Create('http://jira-mcp.teremok-spb.local:9000/mcp')
+$req1 = [System.Net.WebRequest]::Create($JIRA_MCP_URL)
 $req1.Method = 'POST'
 $req1.ContentType = 'application/json; charset=utf-8'
 $req1.Headers['Authorization'] = "Bearer $JIRA_MCP_TOKEN"
@@ -49,7 +58,7 @@ $toolsListBody = @{
     params = @{}
 } | ConvertTo-Json -Depth 30
 
-$req2 = [System.Net.WebRequest]::Create('http://jira-mcp.teremok-spb.local:9000/mcp')
+$req2 = [System.Net.WebRequest]::Create($JIRA_MCP_URL)
 $req2.Method = 'POST'
 $req2.ContentType = 'application/json; charset=utf-8'
 $req2.Headers['Authorization'] = "Bearer $JIRA_MCP_TOKEN"
