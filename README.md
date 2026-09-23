@@ -6,6 +6,7 @@
 
 - [Общие правила](rules/workflow.md).
 - [Стандарты разработки 1С](rules/1c-development.md).
+- [Стандарты разработки Булатов — обязательные](<rules/Стандарты разработки Булатов.bsl>).
 - [Пакетные операции](skills/1c-batch/SKILL.md).
 - [Синхронизация и сеансы](skills/1c-project-sync/SKILL.md).
 - [Jira](skills/jira-workflow/SKILL.md).
