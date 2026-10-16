@@ -9,3 +9,7 @@
 .env.*
 *.log
 *.zip
+
+# Vanessa distribution is delivered separately from Git.
+/Vanessa/distributions/
+/Vanessa/packages/

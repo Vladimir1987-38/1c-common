@@ -1,4 +1,10 @@
-﻿param([Parameter(Mandatory=$true)][string]$ProjectRoot)
+﻿# ---> SPB/Bulatov.V 16.10.2026 PRJ-4263 (фрагмент ИЗМЕНЕН) выполнено полностью codex
+# param([Parameter(Mandatory=$true)][string]$ProjectRoot)
+param(
+	[Parameter(Mandatory=$true)][string]$ProjectRoot,
+	[string]$VanessaProfileName
+)
+# <--- SPB/Bulatov.V 16.10.2026 PRJ-4263
 $ErrorActionPreference = 'Stop'
 $commonRoot = Split-Path -Parent $PSScriptRoot
 $project = (Get-Item -LiteralPath $ProjectRoot).FullName
@@ -22,4 +28,12 @@ foreach ($skill in Get-ChildItem -LiteralPath (Join-Path $commonRoot 'skills') -
     $text += 'Edit the implementation only in 1c-common. Regenerate this entry with 1c-common/tools/connect-project.ps1 after changing skill discovery metadata.' + "`r`n"
     [IO.File]::WriteAllText((Join-Path $destDir 'SKILL.md'), $text, $encoding)
 }
+# ---> SPB/Bulatov.V 16.10.2026 PRJ-4263 (фрагмент ДОБАВЛЕН) выполнено полностью codex
+$vanessaArguments = @{ ProjectRoot = $project }
+if ($PSBoundParameters.ContainsKey('VanessaProfileName')) {
+	$vanessaArguments.ProfileName = $VanessaProfileName
+}
+& (Join-Path $commonRoot 'skills/vanessa-mcp/scripts/initialize-project.ps1') @vanessaArguments
+# <--- SPB/Bulatov.V 16.10.2026 PRJ-4263
+
 Write-Output ('Connected: ' + (Split-Path -Leaf $project))
