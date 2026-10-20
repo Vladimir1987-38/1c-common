@@ -1,0 +1,10 @@
+{
+  "filter": { "extensions": ["Tests"], "modules": [] },
+  "workspacePath": "C:\\path\\to\\project\\tests\\yaxunit",
+  "reportFormat": "jUnit",
+  "reportPath": "results/report.xml",
+  "exitCode": "results/result.txt",
+  "logging": { "file": "results/tests.log", "level": "info" },
+  "closeAfterTests": false,
+  "showReport": true
+}

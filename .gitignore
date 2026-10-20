@@ -13,3 +13,7 @@
 # Vanessa distribution is delivered separately from Git.
 /Vanessa/distributions/
 /Vanessa/packages/
+
+# YAxUnit engine and packages are delivered through Wiki; templates remain in Git.
+/YAxUnit/engine/
+/YAxUnit/packages/

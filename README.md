@@ -12,6 +12,7 @@
 - [Jira](skills/jira-workflow/SKILL.md).
 - [Диагностика тестовых баз](skills/1c-test-db/SKILL.md).
 - [Vanessa Automation через MCP](skills/vanessa-mcp/SKILL.md).
+- [Автотестирование в Wiki](https://wiki.spb.teremok.ru/pages/viewpage.action?pageId=163548669): [Vanessa](https://wiki.spb.teremok.ru/pages/viewpage.action?pageId=163548689) и [YAxUnit](https://wiki.spb.teremok.ru/pages/viewpage.action?pageId=163548690), инструкции и архивы поставок.
 - [YAxUnit: навык тестирования доработок](skills/yaxunit/SKILL.md) — подготовка, адресная загрузка, запуск и проверка результатов.
 - [YAxUnit: подключение и работа с тестами](<инструкции разработчику/YAxUnit.md>) — установка и настройка стенда разработчиком.
 - [Комплект Vanessa и инструкции разработчику](Vanessa/README.md): развёртывание, подключение проекта, использование и настройка.
@@ -23,4 +24,4 @@
 После изменения name или description навыка обновите точки входа в своих проектах через tools/connect-project.ps1. Этот скрипт также создаёт Vanessa/Scenarios и Vanessa/project.json с назначенным клиентом проекта; существующую привязку сохраняет. Формат и проверка клиента описаны в [общем навыке Vanessa](skills/vanessa-mcp/references/project-layout.md). При изменении остальных инструкций и скриптов повторное подключение не требуется.
 
 1c-common и каждый проект имеют отдельные Git-репозитории. Локальные архивы, диагностические результаты и файлы подключения в состав библиотеки для публикации не входят.
-Навык yaxunit подключается к новым проектам тем же tools/connect-project.ps1. Это подключение инструкций, а не установка движка или разрешение запускать тесты в любой базе.
+Перед подключением нового рабочего места скачайте общий движок YAxUnit из Wiki по инструкции YAxUnit/README.md: engine и packages не входят в Git. Навык yaxunit и [комплект YAxUnit](YAxUnit/README.md) подключаются к новым проектам через tools/connect-project.ps1: создаются extensions/YAXUNIT, пустое extensions/Tests и настройки tests/yaxunit. Существующие тесты и настройки сохраняются. Это подготовка файлов, а не установка расширений в базу или разрешение запускать тесты в любой базе.

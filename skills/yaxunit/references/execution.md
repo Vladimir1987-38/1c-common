@@ -4,13 +4,15 @@
 
 ## Подключение нового проекта
 
+Перед созданием файлов восстановите общий движок из [Wiki: YAxUnit](https://wiki.spb.teremok.ru/pages/viewpage.action?pageId=163548690) в 1c-common/YAxUnit/engine/25.12/YAXUNIT. Проверка архива и структура — в [комплекте](../../../YAxUnit/README.md). Поставка движка не хранится в Git общей библиотеки; шаблон Tests и скрипты остаются в Git.
+
 Точка входа создаётся общим tools/connect-project.ps1 из метаданных навыка. Это только обнаружение навыка. Для рабочего стенда отдельно нужны установленный и применимый YAXUNIT, собственное тестовое расширение и разрешённая база.
 
 В doc/AGENTS.md проекта зафиксируйте:
 
 - статус: не настроено / настроено, но не проверено / проверено, дату и результат;
 - подтверждённый тип клиента (толстый или тонкий), версию платформы и YAxUnit;
-- имя собственного расширения и путь его исходников (например, tests/yaxunit/extension);
+- имя собственного расширения и путь его исходников (например, extensions/Tests);
 - путь конфигурации запуска и каталог локальных результатов;
 - особенности побочных действий и восстановления сеансов/хранилища.
 
@@ -27,7 +29,7 @@
     . '../1c-common/skills/1c-batch/scripts/_common.ps1'
     . (Get-DevBasePath)
     $code = Invoke-Designer @(
-        '/LoadConfigFromFiles', 'tests/yaxunit/extension',
+        '/LoadConfigFromFiles', 'extensions/Tests',
         '-Extension', 'Tests',
         '-files', 'CommonModules/ТСТПроверкаПодключения/Ext/Module.bsl',
         '-Format', 'Hierarchical', '-updateConfigDumpInfo', '/UpdateDBCfg'

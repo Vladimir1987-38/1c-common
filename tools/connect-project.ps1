@@ -36,4 +36,7 @@ if ($PSBoundParameters.ContainsKey('VanessaProfileName')) {
 & (Join-Path $commonRoot 'skills/vanessa-mcp/scripts/initialize-project.ps1') @vanessaArguments
 # <--- SPB/Bulatov.V 16.10.2026 PRJ-4263
 
+# ---> SPB/Bulatov.V 19.10.2026 PRJ-4263 (фрагмент ДОБАВЛЕН) выполнено полностью codex
+& (Join-Path $commonRoot 'skills/yaxunit/scripts/initialize-project.ps1') -ProjectRoot $project
+# <--- SPB/Bulatov.V 19.10.2026 PRJ-4263
 Write-Output ('Connected: ' + (Split-Path -Leaf $project))
