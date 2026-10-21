@@ -46,6 +46,22 @@ function Get-AuthArgs {
 	return ,$a
 }
 
+# ---> SPB/Bulatov.V 20.10.2026 PRJ-4051 (фрагмент ДОБАВЛЕН) выполнено полностью codex
+function Get-RepositoryArgs {
+	# Конфигуратор всегда подключается к хранилищу целевого проекта.
+	foreach ($settingName in 'ONEC_REPOSITORY_PATH', 'ONEC_REPOSITORY_USER') {
+		if (-not (Get-Variable -Name $settingName -ValueOnly -ErrorAction SilentlyContinue)) {
+			throw "Не заполнена настройка $settingName. Запуск без хранилища запрещён."
+		}
+	}
+	$repositoryArgs = @("/ConfigurationRepositoryF$ONEC_REPOSITORY_PATH", "/ConfigurationRepositoryN$ONEC_REPOSITORY_USER")
+	# Ключ без значения поглощает следующий аргумент команды как пароль.
+	if (-not [string]::IsNullOrEmpty($ONEC_REPOSITORY_PASSWORD)) {
+		$repositoryArgs += "/ConfigurationRepositoryP$ONEC_REPOSITORY_PASSWORD"
+	}
+	return ,$repositoryArgs
+} # <--- SPB/Bulatov.V 20.10.2026 PRJ-4051
+
 function Format-ArgList {
 	# Массив с квотированием элементов, содержащих пробелы.
 	# Для Start-Process -NoNewWindow (CreateProcess) — корректно передаёт кириллицу.
@@ -76,7 +92,10 @@ function Invoke-Designer {
 	New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
 	try {
 		$outFile = Join-Path $tempDir 'designer.log'
-		$all = @('DESIGNER') + (Get-IBArgs) + (Get-AuthArgs) + @('/DisableStartupDialogs') + $CommandArgs + @('/Out', $outFile)
+		# ---> SPB/Bulatov.V 20.10.2026 PRJ-4051 (фрагмент ИЗМЕНЕН) выполнено полностью codex
+		# $all = @('DESIGNER') + (Get-IBArgs) + (Get-AuthArgs) + @('/DisableStartupDialogs') + $CommandArgs + @('/Out', $outFile)
+		$all = @('DESIGNER') + (Get-IBArgs) + (Get-AuthArgs) + (Get-RepositoryArgs) + @('/DisableStartupDialogs') + $CommandArgs + @('/Out', $outFile)
+		# <--- SPB/Bulatov.V 20.10.2026 PRJ-4051
 		$proc = Start-Process -FilePath $ONEC_PATH -ArgumentList (Format-ArgList $all) -NoNewWindow -Wait -PassThru
 		if (Test-Path $outFile) {
 			$log = (Get-Content $outFile -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)
