@@ -18,16 +18,19 @@ git clone <URL-репозитория-команды> 1c-common
     ├── .gitignore
     ├── .1c-devbase.ps1
     ├── .agents/skills/    # Генерируется подключением
-    ├── Vanessa/
-    │   ├── project.json  # Назначенный клиент и статус проверки
-    │   └── Scenarios/    # Прикладные .feature-файлы
     ├── extensions/
     │   ├── YAXUNIT/       # Движок YAxUnit
     │   └── Tests/         # Собственные тесты проекта
-    ├── tests/yaxunit/
-    │   ├── README.md
-    │   ├── test-config.example.json
-    │   └── results/       # Локальные отчёты
+    ├── tests/
+    │   ├── README.md      # Постоянная структура тестирования
+    │   ├── REPRODUCE.md   # Ручной запуск тестов текущей задачи
+    │   ├── vanessa/
+    │   │   ├── project.json
+    │   │   └── Scenarios/
+    │   └── yaxunit/
+    │       ├── README.md
+    │       ├── test-config.example.json
+    │       └── results/  # Локальные отчёты
     ├── doc/
     │   ├── AGENTS.md
     │   ├── MEMORY_BANK.md
@@ -48,6 +51,8 @@ git clone <URL-репозитория-команды> 1c-common
 | MEMORY_BANK.md.template | doc/MEMORY_BANK.md | Состояние текущей задачи |
 | PROMT.md.template | doc/PROMT.md | План текущей задачи |
 | gitignore.template | .gitignore | Исключение личных настроек и временных файлов |
+| tests-README.md.template | tests/README.md | Постоянная структура тестирования; создаётся подключением |
+| tests-REPRODUCE.md.template | tests/REPRODUCE.md | Ручное воспроизведение текущей задачи; заполняется после тестирования и очищается при новой задаче по общим правилам |
 
 Из корня проекта выполните:
 
@@ -55,7 +60,7 @@ git clone <URL-репозитория-команды> 1c-common
 & '../1c-common/tools/connect-project.ps1' -ProjectRoot (Get-Item -LiteralPath '.').FullName
 ```
 
-Скрипт создаёт .agents/skills/<навык>/SKILL.md с относительными ссылками, Vanessa/Scenarios/.gitkeep и Vanessa/project.json. По умолчанию назначает клиенту имя папки проекта и статус pending. При первом подключении другое имя можно задать параметром -VanessaProfileName 'Имя профиля'. Повторное подключение сохраняет существующую привязку и сценарии.
+Скрипт создаёт .agents/skills/<навык>/SKILL.md с относительными ссылками, tests/vanessa/Scenarios/.gitkeep и tests/vanessa/project.json. По умолчанию назначает клиенту имя папки проекта и статус pending. При первом подключении другое имя можно задать параметром -VanessaProfileName 'Имя профиля'. Повторное подключение сохраняет существующую привязку и сценарии.
 
 Профиль в Vanessa нужно настроить для тестовой базы проекта и проверить отдельно по [общему порядку](../skills/vanessa-mcp/references/project-layout.md); создание файлов не запускает 1С и не создаёт клиента. Остальные проектные файлы подготовьте по таблице шаблонов выше. Реализацию навыков скрипт не копирует. Если в .agents/skills уже есть собственная реализация, сначала согласуйте её перенос; скрипт не должен её затирать.
 
