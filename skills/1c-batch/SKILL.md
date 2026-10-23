@@ -34,10 +34,10 @@ description: "Пакетные операции с платформой 1С:Пр
 
 ```bash
 # PowerShell (предпочтительно)
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ../1c-common/skills/1c-batch/scripts/build-epf.ps1 src/epf/МояОбработка.xml build/МояОбработка.epf
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ../1c-common/skills/1c-batch/scripts/build-epf.ps1 processing/МояОбработка/src/МояОбработка.xml processing/МояОбработка/МояОбработка.epf
 
 # cmd (дополнительно)
-../1c-common/skills/1c-batch/scripts/build-epf.bat src/epf/МояОбработка.xml build/МояОбработка.epf
+../1c-common/skills/1c-batch/scripts/build-epf.bat processing/МояОбработка/src/МояОбработка.xml processing/МояОбработка/МояОбработка.epf
 ```
 
 > Ниже команды показаны в PowerShell-форме. Для .bat — то же имя с расширением `.bat` и те же параметры.
@@ -46,7 +46,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ../1c-common/skills/1c-b
 
 ---
 
-## Работа с обработками
+## Работа с внешними отчётами и обработками
+
+Исходники и собранные файлы сохранять в `processing` целевого проекта: `processing/<Имя>/src/<Имя>.xml` и `processing/<Имя>/<Имя>.epf` (для отчёта — `.erf`). Инструкцию использования хранить рядом с итоговым файлом. При закрытии задачи или переходе к новой архивировать либо удалять весь относящийся к задаче комплект согласно уже выбранному варианту и [общему правилу](../../rules/workflow.md#внешние-отчёты-и-обработки). Это относится и к диагностическим обработкам; временная папка сборки не заменяет постоянное место результата в проекте.
 
 ### build-epf — сборка обработки из XML
 
@@ -249,10 +251,10 @@ commit-captured.ps1 <OBJECTS_FILE> <COMMENT>
 
 ### Исправить ошибку в обработке
 
-1. Разобрать: `dump-epf.ps1 src/epf/МояОбработка.xml D:/Исходная.epf`
-2. Отредактировать BSL-файлы в `src/epf/МояОбработка/`
-3. Собрать: `build-epf.ps1 src/epf/МояОбработка.xml build/МояОбработка.epf`
-4. Проверить: `run-enterprise.ps1 build/МояОбработка.epf`
+1. Разобрать: `dump-epf.ps1 processing/МояОбработка/src/МояОбработка.xml D:/Исходная.epf`
+2. Отредактировать BSL-файлы в `processing/МояОбработка/src/МояОбработка/`
+3. Собрать: `build-epf.ps1 processing/МояОбработка/src/МояОбработка.xml processing/МояОбработка/МояОбработка.epf`
+4. Проверить: `run-enterprise.ps1 processing/МояОбработка/МояОбработка.epf`
 
 ### Загрузка изменённого модуля
 
